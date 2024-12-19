@@ -14,6 +14,9 @@ export default {
         primary: '#e9f02e',
         secondary: '#9da093',
       },
+      fontFamily:{
+        'nunito': ['Nunito']
+      }
     },
   },
   plugins: [],

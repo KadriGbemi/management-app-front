@@ -14,7 +14,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className='bg-custom-gradient'>
+    <div className='bg-custom-gradient font-nunito font-extralight'>
       <header className='absolute inset-x-0 top-0 z-50'>
         <nav aria-label='Global' className='flex items-center justify-between p-6 lg:px-8'>
           <div className='flex lg:flex-1'>
@@ -94,10 +94,14 @@ export default function App() {
         </Dialog>
       </header>
 
-      <main className='pt-28 px-10 grid gap-8'>
-        <div className='flex justify-end'>
-          <Button className='inline-flex items-center gap-1 rounded-md bg-primary py-3 px-3 text-sm/6 font-semibold text-dark shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-secondary data-[focus]:outline-1 data-[focus]:outline-white'>
-            <PlusIcon className='h-5 w-5'/> <span>Create new influencer</span>
+      <main className='pt-28 px-20 grid gap-8 mx-auto text-secondary'>
+        <div className='flex justify-between'>
+          <div>
+            <h3 className='font-medium text-lg'>Influencers</h3>
+            <p>A list of all the influencers including their first and last name and their manager.</p>
+          </div>
+          <Button className='inline-flex items-center gap-1 rounded-md bg-primary h-9 px-3 cursor-pointer text-sm font-semibold text-dark shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-primary/65'>
+            <PlusIcon className='h-5 w-5' /> <span>Create new influencer</span>
           </Button>
         </div>
         <table className='table-fixed text-sm rounded-xl text-left rtl:text-right xl:w-5/6 2xl:w-10/12 mx-auto shadow-lg'>
