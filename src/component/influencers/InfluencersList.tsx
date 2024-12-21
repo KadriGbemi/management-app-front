@@ -2,7 +2,7 @@ import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import { useApiRequest } from '../../api'
 import { Influencer, SOCIAL_MEDIA } from '../../types/InfluencerType'
 import { Loading } from '../LoadingState'
-import { SocialMediaType } from '../../types'
+import { QueryPayloadProps, SocialMediaType } from '../../types'
 import SocialMediaIcon from '../SocialMediaIcon'
 import { Empty } from '../EmptyState'
 import Combobox from '../inputs/Combobox'
@@ -43,6 +43,7 @@ const getSocialMediaAccounts = (socialMediaData: SocialMediaType[]) => {
 
 const InfluencersList = () => {
   const [apiUrl, setApiUrl] = useState('/influencers')
+  const [requestPayload, setRequestPayload] = useState<QueryPayloadProps | undefined>()
   const { data: influencers, loading, error, setError } = useApiRequest<Influencer[]>(apiUrl, 'GET')
 
   return (
@@ -50,8 +51,8 @@ const InfluencersList = () => {
       {error ? <ErrorAlert error={error} setError={setError} /> : null}
       <div className='bg-white rounded-xl gap-4 grid grid-cols-1 text-left rtl:text-right w-full shadow-lg py-8'>
         <div className='flex justify-between px-8 flex-wrap gap-6'>
-          <SearchInput />
-          <Combobox setApiUrl={setApiUrl} apiUrl='/influencers' />
+          <SearchInput setApiUrl={setApiUrl} apiUrl='/influencers' requestPayload={requestPayload} setRequestPayload={setRequestPayload}/>
+          <Combobox setApiUrl={setApiUrl} apiUrl='/influencers' requestPayload={requestPayload} setRequestPayload={setRequestPayload}/>
         </div>
         <Loading isLoading={loading}>
           {influencers?.length ? (

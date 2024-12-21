@@ -10,13 +10,24 @@ export interface ProfileProps {
     img: string
 }
 
-export interface ComboboxProps {
+export interface QueryProps {
     setApiUrl?: Function
     apiUrl?: string
+    requestPayload?: QueryPayloadProps
+    setRequestPayload: Function
+}
+
+export interface QueryPayloadProps {
+    first_name?: string
+    last_name?: string
+    employee?: string
 }
 
 export interface RequestQueryProps {
     setApiUrl?: Function,
     query?: string
     apiUrl?: string
+    payload: QueryPayloadProps
+    defaultPayload?: QueryPayloadProps
+    setRequestPayload: Function
 }

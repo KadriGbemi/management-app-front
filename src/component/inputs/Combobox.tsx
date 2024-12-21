@@ -4,21 +4,10 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useApiRequest } from '../../api'
 import { Employee } from '../../types/EmployeeType'
 import { Loading } from '../LoadingState'
-import { ComboboxProps, RequestQueryProps } from '../../types'
+import { QueryProps } from '../../types'
+import { buildRequestQuery } from '../../utils'
 
-const buildRequestQuery = ({ setApiUrl, query, apiUrl }: RequestQueryProps) => {
-  if (apiUrl && setApiUrl) {
-    if (!query) setApiUrl?.(apiUrl)
-
-    if (query?.trim()) {
-      const params = new URLSearchParams({ employee: query.trim() })
-      const queryUrl = `${apiUrl}?${params.toString()}`
-      setApiUrl?.(queryUrl)
-    }
-  }
-}
-
-export default function ComboboxComponent({ setApiUrl, apiUrl }: ComboboxProps) {
+export default function ComboboxComponent({ setApiUrl, apiUrl, requestPayload, setRequestPayload }: QueryProps) {
   const [query, setQuery] = useState('')
   const { data: employees, loading } = useApiRequest<Employee[]>(`/employees`, 'GET')
 
@@ -33,13 +22,34 @@ export default function ComboboxComponent({ setApiUrl, apiUrl }: ComboboxProps) 
 
   useEffect(() => {
     if (selected?.name) {
-      buildRequestQuery({ setApiUrl, apiUrl, query: selected?.name })
+      const payload = { ...requestPayload, employee: selected?.name.trim() }
+
+      buildRequestQuery({
+        setApiUrl,
+        apiUrl,
+        query: selected?.name,
+        payload,
+        setRequestPayload,
+      })
+
+      setRequestPayload(payload)
     }
   }, [selected?.name])
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      buildRequestQuery({ setApiUrl, apiUrl, query })
+      const payload = { ...requestPayload, employee: query.trim() }
+
+      buildRequestQuery({
+        setApiUrl,
+        apiUrl,
+        query,
+        defaultPayload: { ...requestPayload, employee: '' },
+        payload,
+        setRequestPayload,
+      })
+
+      setRequestPayload(payload)
     }, 1500)
     return () => clearTimeout(delayDebounceFn)
   }, [query])
