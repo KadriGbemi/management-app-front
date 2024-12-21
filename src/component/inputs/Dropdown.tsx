@@ -21,31 +21,39 @@ export default function Dropdown({ setApiUrl, apiUrl }: DropdownProps) {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (query.trim()) {
-        const params = new URLSearchParams({ employee: query })
+      if (!query) setApiUrl?.(apiUrl)
+
+      if (query && query?.trim()) {
+        const params = new URLSearchParams({ employee: query.trim() })
         const queryUrl = `${apiUrl}?${params.toString()}`
         setApiUrl?.(queryUrl)
       }
-
-      if(!query) setApiUrl?.(apiUrl)
-    }, 2000)
+    }, 1500)
     return () => clearTimeout(delayDebounceFn)
   }, [query])
 
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleOnInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
+  }
+
+  const handleOnChange = (value: Employee) => {
+    setSelected(value)
+
+    if (value?.name) {
+      setQuery(value.name)
+    }
   }
 
   return (
     <div className='w-full md:w-60'>
-      <Combobox value={selected} onChange={(value) => setSelected(value)} onClose={() => setQuery('')}>
+      <Combobox value={selected} onChange={handleOnChange} onClose={() => setQuery('')}>
         <div className='relative'>
           <ComboboxInput
             placeholder='Filter by manager'
             autoComplete='off'
             className='w-full cursor-pointer rounded-lg border-none bg-secondary/15 py-1.5 pr-8 pl-3 text-sm/6 text-secondary/60 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-secondary/15'
             displayValue={(person: Employee) => person?.name}
-            onChange={handleOnChange}
+            onChange={handleOnInputChange}
           />
           <ComboboxButton className='group absolute inset-y-0 right-0 px-2.5'>
             <ChevronDownIcon className='size-4 fill-secondary/60 group-data-[hover]:fill-secondary' />
@@ -55,7 +63,7 @@ export default function Dropdown({ setApiUrl, apiUrl }: DropdownProps) {
         <ComboboxOptions
           anchor='bottom'
           transition
-          className=' w-[var(--input-width)] rounded-xl border border-secondary/5 bg-secondary/25 p-1 [--anchor-gap:var(--spacing-1)] empty:invisible transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
+          className='w-[var(--input-width)] rounded-xl border border-secondary/5 bg-secondary/25 p-1 [--anchor-gap:var(--spacing-1)] empty:invisible transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
         >
           <Loading className='w-32 h-32' isLoading={loading}>
             {filteredEmployee?.map((employee) => (
