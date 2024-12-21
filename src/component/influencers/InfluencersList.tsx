@@ -8,43 +8,7 @@ import { Empty } from '../EmptyState'
 import Dropdown from '../inputs/Dropdown'
 import SearchInput from '../inputs/SearchInput'
 import { useState } from 'react'
-
-const Alert = ({ error }: { error: string }) => (
-  <div
-    className='fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center p-2 text-sm text-white rounded-lg bg-danger shadow-lg z-50'
-    role='alert'
-  >
-    <svg
-      className='flex-shrink-0 inline w-4 h-4 me-3'
-      aria-hidden='true'
-      xmlns='http://www.w3.org/2000/svg'
-      fill='currentColor'
-      viewBox='0 0 20 20'
-    >
-      <path d='M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z' />
-    </svg>
-    <span className='sr-only'>Info</span>
-    <div>
-      <span className='font-medium'>An error occured:</span> {error}
-    </div>
-    <button
-      type='button'
-      className='ms-auto bg-transparent hover:text-red rounded-lg text-sm p-1.5 ml-auto inline-flex items-center'
-      aria-label='Close'
-      //onClick={document?.parentElement?.remove()}
-    >
-      <svg
-        className='w-4 h-4'
-        xmlns='http://www.w3.org/2000/svg'
-        fill='currentColor'
-        viewBox='0 0 20 20'
-        aria-hidden='true'
-      >
-        <path d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' />
-      </svg>
-    </button>
-  </div>
-)
+import ErrorAlert from '../ErrorAlert'
 
 const getSocialMediaAccounts = (socialMediaData: SocialMediaType[]) => {
   let getAllTiktokAccounts = ''
@@ -79,13 +43,11 @@ const getSocialMediaAccounts = (socialMediaData: SocialMediaType[]) => {
 
 const InfluencersList = () => {
   const [apiUrl, setApiUrl] = useState('/influencers')
-  const { data: influencers, loading, error } = useApiRequest<Influencer[]>(apiUrl, 'GET')
-
-  console.log('error', error)
+  const { data: influencers, loading, error, setError } = useApiRequest<Influencer[]>(apiUrl, 'GET')
 
   return (
     <div className='pt-4 pb-10'>
-      {error ? <Alert error={error} /> : null}
+      {error ? <ErrorAlert error={error} setError={setError} /> : null}
       <div className='bg-white rounded-xl gap-4 grid grid-cols-1 text-left rtl:text-right w-full shadow-lg py-8'>
         <div className='flex justify-between px-8 flex-wrap gap-6'>
           <SearchInput />

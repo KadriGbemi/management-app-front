@@ -52,7 +52,7 @@ export const useApiRequest = <T>(url?: string, method?: APIMethodProps, body?: a
     }
   }, [url, method]);
 
-  return { data, error, loading };
+  return { data, error, loading, setError };
 };
 
 // Function for individual requests without hooks
