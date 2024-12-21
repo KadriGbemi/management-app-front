@@ -1,4 +1,4 @@
-import { SocialMediaType } from "."
+import { ProfileProps, SocialMediaType } from "."
 
 export enum SOCIAL_MEDIA {
   Tiktok = 1,
@@ -6,12 +6,9 @@ export enum SOCIAL_MEDIA {
 }
 
 export interface Influencer {
+  id: string
   first_name: string
   last_name: string
-  employee?: {
-    id: string
-    name: string
-    img: string
-  }
+  employee?: ProfileProps
   social_media: SocialMediaType[]
 }

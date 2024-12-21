@@ -5,6 +5,9 @@ import { Loading } from '../LoadingState'
 import { SocialMediaType } from '../../types'
 import SocialMediaIcon from '../SocialMediaIcon'
 import { Empty } from '../EmptyState'
+import Dropdown from '../inputs/Dropdown'
+import SearchInput from '../inputs/SearchInput'
+import { useState } from 'react'
 
 const getSocialMediaAccounts = (socialMediaData: SocialMediaType[]) => {
   let getAllTiktokAccounts = ''
@@ -23,81 +26,89 @@ const getSocialMediaAccounts = (socialMediaData: SocialMediaType[]) => {
   return (
     <div className='grid grid-cols-1 gap-2 lowercase'>
       {getAllTiktokAccounts ? (
-        <p className='flex items-center gap-1'>
+        <div className='flex items-center gap-1'>
           {' '}
           <SocialMediaIcon platform={SOCIAL_MEDIA.Tiktok} /> {getAllTiktokAccounts}
-        </p>
+        </div>
       ) : null}
       {getAllInstagramAccounts ? (
-        <p className='flex items-center gap-1'>
+        <div className='flex items-center gap-1'>
           <SocialMediaIcon platform={SOCIAL_MEDIA.Instagram} /> {getAllInstagramAccounts}
-        </p>
+        </div>
       ) : null}
     </div>
   )
 }
 
 const InfluencersList = () => {
-  const { data: influencers, loading } = useApiRequest<Influencer[]>(`/influencers`, 'GET')
+  const [apiUrl, setApiUrl] = useState('/influencers')
+  const { data: influencers, loading, error } = useApiRequest<Influencer[]>(apiUrl, 'GET')
 
-  console.log('influencers', influencers)
+  console.log("error", error)
 
   return (
     <div className='pt-4 pb-10'>
-      <Loading isLoading={loading}>
-        {influencers?.length ? (
-          <table className='table-auto text-sm bg-white rounded-xl text-left rtl:text-right w-full shadow-lg'>
-            <thead className='text-xs text-secondary uppercase border-b border-secondary/10'>
-              <tr>
-                <th scope='col' className='px-8 py-6'>
-                  First name
-                </th>
-                <th scope='col' className='px-8 py-6 hidden md:table-cell'>
-                  Last name
-                </th>
-                <th scope='col' className='px-8 py-6'>
-                  Social media
-                </th>
-                <th scope='col' className='hidden md:table-cell md:px-8 md:py-6'>
-                  Manager
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {influencers?.map((influencer, index) => (
-                <tr
-                  className={`odd:bg-white even:bg-secondary/5 rounded-bl-lg rounded-br-lg ${
-                    influencers?.length - 1 !== index ? 'border-b border-secondary/10' : ''
-                  } `}
-                >
-                  <td className='px-8 py-4 whitespace-nowrap'>{influencer.first_name}</td>
-                  <td className='px-8 hidden md:table-cell'> {influencer.last_name}</td>
-                  <td className='px-8 py-4'> {getSocialMediaAccounts(influencer.social_media)}</td>
-                  <td className='px-8 hidden md:table-cell'>
-                    {' '}
-                    <div className='space-x-2 text-nowrap'>
-                      <img
-                        alt=''
-                        src={influencer?.employee?.img}
-                        className='inline-block size-8 rounded-full ring-2 ring-white'
-                      />
-                      <span>{influencer?.employee?.name}</span>
-                    </div>
-                  </td>
-
-                  <td className='px-3 py-4'>
-                    {' '}
-                    <PencilSquareIcon className='h-4 w-4 text-secondary cursor-pointer' />
-                  </td>
+      <div className=' bg-white rounded-xl gap-4 grid grid-cols-1 text-left rtl:text-right w-full shadow-lg py-8'>
+        <div className='flex justify-between px-8 flex-wrap gap-6'>
+          <SearchInput />
+          <Dropdown setApiUrl={setApiUrl} apiUrl='/influencers' />
+        </div>
+        <Loading isLoading={loading}>
+          {influencers?.length ? (
+            <table className='table-auto text-sm w-full'>
+              <thead className='text-xs text-secondary uppercase border-b border-secondary/10'>
+                <tr>
+                  <th scope='col' className='px-8 py-6'>
+                    First name
+                  </th>
+                  <th scope='col' className='px-8 py-6 hidden md:table-cell'>
+                    Last name
+                  </th>
+                  <th scope='col' className='px-8 py-6'>
+                    Social media
+                  </th>
+                  <th scope='col' className='hidden md:table-cell md:px-8 md:py-6'>
+                    Manager
+                  </th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <Empty />
-        )}
-      </Loading>
+              </thead>
+              <tbody>
+                {influencers?.map((influencer, index) => (
+                  <tr
+                    key={influencer.id}
+                    className={`odd:bg-white even:bg-secondary/5 rounded-bl-lg rounded-br-lg ${
+                      influencers?.length - 1 !== index ? 'border-b border-secondary/10' : ''
+                    } `}
+                  >
+                    <td className='px-8 py-4 whitespace-nowrap'>{influencer.first_name}</td>
+                    <td className='px-8 hidden md:table-cell'> {influencer.last_name}</td>
+                    <td className='px-8 py-4'> {getSocialMediaAccounts(influencer.social_media)}</td>
+                    <td className='px-8 hidden md:table-cell'>
+                      {' '}
+                      <div className='space-x-2 text-nowrap'>
+                        <img
+                          alt=''
+                          src={influencer?.employee?.img}
+                          className='inline-block size-8 rounded-full ring-2 ring-white'
+                        />
+                        <span>{influencer?.employee?.name}</span>
+                      </div>
+                    </td>
+
+                    <td className='px-3 py-4'>
+                      {' '}
+                      <PencilSquareIcon className='h-4 w-4 text-secondary cursor-pointer' />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <Empty />
+          )}
+        </Loading>
+      </div>
     </div>
   )
 }
