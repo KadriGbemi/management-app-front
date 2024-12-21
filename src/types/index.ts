@@ -10,8 +10,13 @@ export interface ProfileProps {
     img: string
 }
 
-
-export interface DropdownProps {
+export interface ComboboxProps {
     setApiUrl?: Function
+    apiUrl?: string
+}
+
+export interface RequestQueryProps {
+    setApiUrl?: Function,
+    query?: string
     apiUrl?: string
 }

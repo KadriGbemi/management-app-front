@@ -1,12 +1,24 @@
-import { ChangeEvent, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useApiRequest } from '../../api'
 import { Employee } from '../../types/EmployeeType'
 import { Loading } from '../LoadingState'
-import { DropdownProps } from '../../types'
+import { ComboboxProps, RequestQueryProps } from '../../types'
 
-export default function Dropdown({ setApiUrl, apiUrl }: DropdownProps) {
+const buildRequestQuery = ({ setApiUrl, query, apiUrl }: RequestQueryProps) => {
+  if (apiUrl && setApiUrl) {
+    if (!query) setApiUrl?.(apiUrl)
+
+    if (query?.trim()) {
+      const params = new URLSearchParams({ employee: query.trim() })
+      const queryUrl = `${apiUrl}?${params.toString()}`
+      setApiUrl?.(queryUrl)
+    }
+  }
+}
+
+export default function ComboboxComponent({ setApiUrl, apiUrl }: ComboboxProps) {
   const [query, setQuery] = useState('')
   const { data: employees, loading } = useApiRequest<Employee[]>(`/employees`, 'GET')
 
@@ -20,40 +32,33 @@ export default function Dropdown({ setApiUrl, apiUrl }: DropdownProps) {
         })
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (!query) setApiUrl?.(apiUrl)
+    if (selected?.name) {
+      buildRequestQuery({ setApiUrl, apiUrl, query: selected?.name })
+    }
+  }, [selected?.name])
 
-      if (query && query?.trim()) {
-        const params = new URLSearchParams({ employee: query.trim() })
-        const queryUrl = `${apiUrl}?${params.toString()}`
-        setApiUrl?.(queryUrl)
-      }
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      buildRequestQuery({ setApiUrl, apiUrl, query })
     }, 1500)
     return () => clearTimeout(delayDebounceFn)
   }, [query])
 
-  const handleOnInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value)
-  }
-
-  const handleOnChange = (value: Employee) => {
-    setSelected(value)
-
-    if (value?.name) {
-      setQuery(value.name)
-    }
-  }
-
   return (
     <div className='w-full md:w-60'>
-      <Combobox value={selected} onChange={handleOnChange} onClose={() => setQuery('')}>
+      <Combobox
+        value={selected}
+        onChange={(value: Employee) => setSelected(value)}
+        onClose={() => setQuery('')}
+        as='div'
+      >
         <div className='relative'>
           <ComboboxInput
             placeholder='Filter by manager'
             autoComplete='off'
             className='w-full cursor-pointer rounded-lg border-none bg-secondary/15 py-1.5 pr-8 pl-3 text-sm/6 text-secondary/60 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-secondary/15'
             displayValue={(person: Employee) => person?.name}
-            onChange={handleOnInputChange}
+            onChange={(event) => setQuery(event.target.value)}
           />
           <ComboboxButton className='group absolute inset-y-0 right-0 px-2.5'>
             <ChevronDownIcon className='size-4 fill-secondary/60 group-data-[hover]:fill-secondary' />

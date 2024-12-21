@@ -5,7 +5,7 @@ import { Loading } from '../LoadingState'
 import { SocialMediaType } from '../../types'
 import SocialMediaIcon from '../SocialMediaIcon'
 import { Empty } from '../EmptyState'
-import Dropdown from '../inputs/Dropdown'
+import Combobox from '../inputs/Combobox'
 import SearchInput from '../inputs/SearchInput'
 import { useState } from 'react'
 import ErrorAlert from '../ErrorAlert'
@@ -51,7 +51,7 @@ const InfluencersList = () => {
       <div className='bg-white rounded-xl gap-4 grid grid-cols-1 text-left rtl:text-right w-full shadow-lg py-8'>
         <div className='flex justify-between px-8 flex-wrap gap-6'>
           <SearchInput />
-          <Dropdown setApiUrl={setApiUrl} apiUrl='/influencers' />
+          <Combobox setApiUrl={setApiUrl} apiUrl='/influencers' />
         </div>
         <Loading isLoading={loading}>
           {influencers?.length ? (
