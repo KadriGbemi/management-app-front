@@ -14,7 +14,11 @@ export interface QueryProps {
     setApiUrl?: Function
     apiUrl?: string
     requestPayload?: QueryPayloadProps
-    setRequestPayload: Function
+    setRequestPayload?: Function
+    containerClassName?: string
+    anchor?: 'bottom' | 'top'
+    placeholder?: string
+    handleOnChange?: Function
 }
 
 export interface QueryPayloadProps {
@@ -29,5 +33,5 @@ export interface RequestQueryProps {
     apiUrl?: string
     payload: QueryPayloadProps
     defaultPayload?: QueryPayloadProps
-    setRequestPayload: Function
+    setRequestPayload?: Function
 }

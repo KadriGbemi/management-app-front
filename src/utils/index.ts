@@ -7,14 +7,14 @@ export const buildRequestQuery = ({ setApiUrl, query, apiUrl, payload, defaultPa
             const params = new URLSearchParams(defaultPayload as Record<string, string>)
             const queryUrl = `${apiUrl}?${params.toString()}`
             setApiUrl?.(queryUrl)
-            setRequestPayload(defaultPayload)
+            setRequestPayload?.(defaultPayload)
         }
 
         if (query?.trim()) {
             const params = new URLSearchParams(payload as Record<string, string>)
             const queryUrl = `${apiUrl}?${params.toString()}`
             setApiUrl?.(queryUrl)
-            setRequestPayload(payload)
+            setRequestPayload?.(payload)
         }
     }
 }

@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react'
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import { useApiRequest } from '../../api'
-import { Employee } from '../../types/EmployeeType'
-import { Loading } from '../LoadingState'
-import { QueryProps } from '../../types'
-import { buildRequestQuery } from '../../utils'
+import { useApiRequest } from '../../../api'
+import { Employee } from '../../../types/EmployeeType'
+import { Loading } from '../../LoadingState'
+import { QueryProps } from '../../../types'
+import { buildRequestQuery } from '../../../utils'
 
-export default function ComboboxComponent({ setApiUrl, apiUrl, requestPayload, setRequestPayload }: QueryProps) {
+export default function EmployeesCombobox({
+  setApiUrl,
+  apiUrl,
+  requestPayload,
+  setRequestPayload,
+  containerClassName,
+  anchor = 'bottom',
+  handleOnChange,
+  placeholder = 'Filter by manager',
+}: QueryProps) {
   const [query, setQuery] = useState('')
   const { data: employees, loading } = useApiRequest<Employee[]>(`/employees`, 'GET')
 
@@ -32,7 +41,7 @@ export default function ComboboxComponent({ setApiUrl, apiUrl, requestPayload, s
         setRequestPayload,
       })
 
-      setRequestPayload(payload)
+      setRequestPayload?.(payload)
     }
   }, [selected?.name])
 
@@ -49,24 +58,27 @@ export default function ComboboxComponent({ setApiUrl, apiUrl, requestPayload, s
         setRequestPayload,
       })
 
-      setRequestPayload(payload)
+      setRequestPayload?.(payload)
     }, 1500)
     return () => clearTimeout(delayDebounceFn)
   }, [query])
 
   return (
-    <div className='w-full md:w-60'>
+    <div className={containerClassName}>
       <Combobox
         value={selected}
-        onChange={(value: Employee) => setSelected(value)}
+        onChange={(value: Employee) => {
+          setSelected(value)
+          handleOnChange?.(value)
+        }}
         onClose={() => setQuery('')}
         as='div'
       >
         <div className='relative'>
           <ComboboxInput
-            placeholder='Filter by manager'
+            placeholder={placeholder}
             autoComplete='off'
-            className='w-full cursor-pointer rounded-lg border-none bg-secondary/15 py-1.5 pr-8 pl-3 text-sm/6 text-secondary/60 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-secondary/15'
+            className='w-full cursor-pointer rounded-lg border-none bg-secondary/10 py-1.5 pr-8 pl-3 text-sm/6 text-secondary/60 focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-1 data-[focus]:outline-secondary/10'
             displayValue={(person: Employee) => person?.name}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -76,9 +88,11 @@ export default function ComboboxComponent({ setApiUrl, apiUrl, requestPayload, s
         </div>
 
         <ComboboxOptions
-          anchor='bottom'
+          anchor={anchor}
           transition
-          className='w-[var(--input-width)] rounded-xl border border-secondary/5 bg-secondary/25 p-1 [--anchor-gap:var(--spacing-1)] empty:invisible transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
+          className='z-50 w-[var(--input-width)] rounded-xl border border-secondary/5 bg-white
+          p-1 [--anchor-gap:var(--spacing-1)] empty:invisible transition duration-100 ease-in
+           data-[leave]:data-[closed]:opacity-0'
         >
           <Loading className='w-32 h-32' isLoading={loading}>
             {filteredEmployee?.map((employee) => (
