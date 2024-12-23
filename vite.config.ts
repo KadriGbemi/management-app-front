@@ -5,9 +5,6 @@ import vercel from 'vite-plugin-vercel';
 
 // https://vite.dev/config/
 export default defineConfig({
-  define: {
-    __APP_ENV__: process.env.VITE_API_URL,
-  },
   build: {
     rollupOptions: {
       input: {
