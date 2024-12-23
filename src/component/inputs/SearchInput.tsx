@@ -8,20 +8,26 @@ export default function SearchInput({ setApiUrl, apiUrl, requestPayload, setRequ
   const [query, setQuery] = useState('')
 
   useEffect(() => {
-    const payload = { ...requestPayload, first_name: query.trim(), last_name: query.trim() }
+    const { employee, first_name, last_name } = requestPayload || {}
 
-    const delayDebounceFn = setTimeout(() => {
-      buildRequestQuery({
-        setApiUrl,
-        apiUrl,
-        query,
-        defaultPayload: { ...requestPayload, first_name: '', last_name: '' },
-        payload,
-        setRequestPayload
-      })
+    if (query || employee || first_name || last_name) {
+      const payload = { ...requestPayload, first_name: query.trim(), last_name: query.trim() }
 
-    }, 1500)
-    return () => clearTimeout(delayDebounceFn)
+      const delayDebounceFn = setTimeout(() => {
+        buildRequestQuery({
+          setApiUrl,
+          apiUrl,
+          query,
+          defaultPayload: { ...requestPayload, first_name: '', last_name: '' },
+          payload,
+          setRequestPayload,
+        })
+
+        setRequestPayload?.(payload)
+      }, 1500)
+
+      return () => clearTimeout(delayDebounceFn)
+    }
   }, [query])
 
   return (

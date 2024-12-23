@@ -22,7 +22,7 @@ export default function EmployeesCombobox({
   const [query, setQuery] = useState('')
   const { data: employees, loading } = useApiRequest<Employee[]>(`/employees`, 'GET')
 
-  const [selected, setSelected] = useState<Employee | null | undefined>(employees?.[0])
+  const [selected, setSelected] = useState<Employee | null | undefined>(employees?.[0] || defaultValue)
 
   const filteredEmployee =
     query === ''
@@ -48,21 +48,26 @@ export default function EmployeesCombobox({
   }, [selected?.name])
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      const payload = { ...requestPayload, employee: query.trim() }
+    const { employee, first_name, last_name } = requestPayload || {}
 
-      buildRequestQuery({
-        setApiUrl,
-        apiUrl,
-        query,
-        defaultPayload: { ...requestPayload, employee: '' },
-        payload,
-        setRequestPayload,
-      })
+    if (query || employee || first_name || last_name) {
+      const delayDebounceFn = setTimeout(() => {
+        const payload = { ...requestPayload, employee: query.trim() }
 
-      setRequestPayload?.(payload)
-    }, 1500)
-    return () => clearTimeout(delayDebounceFn)
+        buildRequestQuery({
+          setApiUrl,
+          apiUrl,
+          query,
+          payload,
+          defaultPayload: { ...requestPayload, employee: '' },
+          setRequestPayload,
+        })
+
+        setRequestPayload?.(payload)
+      }, 1500)
+
+      return () => clearTimeout(delayDebounceFn)
+    }
   }, [query])
 
   return (
