@@ -3,10 +3,10 @@
 import Logo from './assets/logo.svg'
 import InfluencersList from './component/influencers/InfluencersList'
 
-const navigation = [
-  { name: 'Influencers', href: '#' },
-  { name: 'Employees', href: '#' },
-]
+// const navigation = [
+//   { name: 'Influencers', href: '#' },
+//   { name: 'Employees', href: '#' },
+// ]
 
 export default function App() {
   return (
@@ -19,13 +19,13 @@ export default function App() {
               <img alt='Logo' src={Logo} className='h-8 w-auto text-secondary' />
             </a>
           </div>
-          <div className='flex gap-x-12'>
+          {/* <div className='flex gap-x-12'>
             {navigation.map((item) => (
               <a key={item.name} href={item.href} className='text-sm/6 font-semibold text-secondary'>
                 {item.name}
               </a>
             ))}
-          </div>
+          </div> */}
         </nav>
       </header>
 

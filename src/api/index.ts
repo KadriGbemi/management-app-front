@@ -56,7 +56,7 @@ export const useApiRequest = <T>(url?: string, method?: APIMethodProps, reloadDa
     }
   }, [url, method, reloadData]);
 
-  return { data, error, loading, setError, reloadData };
+  return { data, error, loading, setError, reloadData, setLoading };
 };
 
 // Function for individual requests without hooks

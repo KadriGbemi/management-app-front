@@ -1,5 +1,5 @@
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
-import { useApiRequest } from '../../api'
+import { apiRequest, useApiRequest } from '../../api'
 import { DialogType, Influencer, SOCIAL_MEDIA } from '../../types/InfluencerType'
 import { Loading } from '../LoadingState'
 import { QueryPayloadProps } from '../../types'
@@ -7,10 +7,12 @@ import SocialMediaIcon from '../SocialMediaIcon'
 import { Empty } from '../EmptyState'
 import { Button } from '@headlessui/react'
 import { PlusIcon } from '@heroicons/react/24/solid'
+import { TrashIcon } from '@heroicons/react/24/outline'
 import EmployeesCombobox from '../inputs/employees/Combobox'
 import SearchInput from '../inputs/SearchInput'
 import { useState } from 'react'
 import DialogComponent from '../dialog'
+import { useNotification } from '../../context/Notification'
 
 const getSocialMediaAccounts = (influencer: Influencer) => {
   let getAllTiktokAccounts = ''
@@ -48,10 +50,29 @@ const InfluencersList = () => {
   const [apiUrl, setApiUrl] = useState('/influencers')
   const [requestPayload, setRequestPayload] = useState<QueryPayloadProps | undefined>()
   const [reloadData, setReloadData] = useState(false)
-  const { data: influencers, loading } = useApiRequest<Influencer[]>(apiUrl, 'GET', reloadData)
+  const { setError, setSuccess } = useNotification()
+  const { data: influencers, loading, setLoading } = useApiRequest<Influencer[]>(apiUrl, 'GET', reloadData)
 
   const [showInfluencerForm, setShowInfluencerForm] = useState<DialogType | undefined>()
   const [selectedInfluencer, setSelectedInfluencer] = useState<Influencer>()
+
+  const handleDataRefresh = () => setReloadData(!reloadData)
+
+  const handleDeleteInfluencer = async (influencerId: string) => {
+    setLoading(true)
+
+    const response = await apiRequest(`/influencers/${influencerId}`, 'DELETE')
+
+    if (response?.error) {
+      setError?.(response?.errors || response.error)
+    }
+
+    if (response?.data) {
+      setSuccess?.('Influencer deleted successfully')
+      handleDataRefresh()
+    }
+    setLoading(false)
+  }
 
   return (
     <>
@@ -61,7 +82,7 @@ const InfluencersList = () => {
         selectedInfluencer={showInfluencerForm === 'edit' ? selectedInfluencer : undefined}
         type={showInfluencerForm}
         title={showInfluencerForm === 'edit' ? 'Edit influencer' : 'Create new influencer'}
-        handleDataRefresh={() => setReloadData(!reloadData)}
+        handleDataRefresh={handleDataRefresh}
       />
 
       <div className='flex justify-between items-center gap-4'>
@@ -139,14 +160,19 @@ const InfluencersList = () => {
                       </td>
 
                       <td className='px-3 py-4'>
-                        {' '}
-                        <PencilSquareIcon
-                          className='h-4 w-4 text-secondary cursor-pointer'
-                          onClick={() => {
-                            setShowInfluencerForm('edit')
-                            setSelectedInfluencer(influencer)
-                          }}
-                        />
+                        <div className='flex gap-2'>
+                          <PencilSquareIcon
+                            className='h-5 w-5 text-secondary cursor-pointer'
+                            onClick={() => {
+                              setShowInfluencerForm('edit')
+                              setSelectedInfluencer(influencer)
+                            }}
+                          />
+                          <TrashIcon
+                            className='w-5 h-5 text-red cursor-pointer'
+                            onClick={() => influencer?.id && handleDeleteInfluencer(influencer?.id)}
+                          />
+                        </div>
                       </td>
                     </tr>
                   ))}

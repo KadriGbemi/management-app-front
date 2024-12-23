@@ -43,15 +43,12 @@ const InfluencerForm = ({
   })
 
   const handleDataPreload = useCallback(() => {
-    console.log('selectedInfluencer  type', type)
     if (type === 'edit' && selectedInfluencer) {
-      console.log('selectedInfluencer', selectedInfluencer)
       setFormData({ ...selectedInfluencer })
     }
   }, [selectedInfluencer, type])
 
   useEffect(() => {
-    console.log('selectedInfluencer  type', type)
     if (type === 'edit') {
       handleDataPreload()
     }
@@ -106,7 +103,6 @@ const InfluencerForm = ({
         employee: { img: employee?.img, id: employee?.id, name: employee?.name },
       })
 
-      console.log('Form response data', response?.data)
       if (response?.errors) {
         setErrors(response.errors)
       }
@@ -123,12 +119,11 @@ const InfluencerForm = ({
     }
 
     if (type === 'edit') {
-      console.log('payload', formData.employee, formData.id)
       const response = await apiRequest('/influencers', 'PUT', {
         influencerId: formData.id,
         employee: { img: employee?.img, id: employee?.id, name: employee?.name },
       })
-      console.log('Form response data', response?.data)
+
       if (response?.errors) {
         setErrors(response.errors)
       }
@@ -213,9 +208,7 @@ const InfluencerForm = ({
                   <div className='flex'>
                     <PlusCircleIcon
                       className={`w-6 h-6 ${
-                        isDisabled || index < 1
-                          ? 'text-secondary/10 cursor-not-allowed'
-                          : ' text-secondary/80 cursor-pointer'
+                        isDisabled ? 'text-secondary/10 cursor-not-allowed' : ' text-secondary/80 cursor-pointer'
                       }`}
                       onClick={() => !isDisabled && onPlusIconClicked(SOCIAL_MEDIA_TYPE.Tiktok)}
                     />
@@ -258,9 +251,7 @@ const InfluencerForm = ({
                   <div className='flex'>
                     <PlusCircleIcon
                       className={`w-6 h-6 ${
-                        isDisabled || index < 1
-                          ? 'text-secondary/10 cursor-not-allowed'
-                          : ' text-secondary/80 cursor-pointer'
+                        isDisabled ? 'text-secondary/10 cursor-not-allowed' : ' text-secondary/80 cursor-pointer'
                       }`}
                       onClick={() => !isDisabled && onPlusIconClicked(SOCIAL_MEDIA_TYPE.Instagram)}
                     />
