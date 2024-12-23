@@ -1,4 +1,5 @@
-import { ProfileProps, SocialMediaType } from "."
+import {  SocialMediaType } from "."
+import { Employee } from "./EmployeeType"
 
 export type SocialMediaAccountType = 'tiktok' | 'instagram'
 
@@ -12,13 +13,16 @@ export enum SOCIAL_MEDIA_TYPE {
   Instagram = 'instagram',
 }
 
-
-export interface Influencer {
+interface InfluencerProps {
   id?: string
   first_name?: string
   last_name?: string
-  employee?: ProfileProps
-  social_media?: SocialMediaType[]
+  employee?: Employee
+}
+
+export interface Influencer extends InfluencerProps {
+  tiktok: SocialMediaType[]
+  instagram: SocialMediaType[]
 }
 
 export interface SocialMediaFields {
@@ -28,12 +32,7 @@ export interface SocialMediaFields {
 }
 
 
-export interface InfluencerFormProps extends Influencer {
-  tiktok: SocialMediaFields[],
-  instagram: SocialMediaFields[],
-}
-
-export interface InfluencerFormErrorProps extends Influencer {
+export interface InfluencerFormErrorProps extends InfluencerProps {
   tiktok: SocialMediaFields[],
   instagram: SocialMediaFields[],
 }

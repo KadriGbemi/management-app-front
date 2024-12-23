@@ -1,24 +1,31 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Field, Fieldset, Input, Label } from '@headlessui/react'
 import { Button } from '@headlessui/react'
 import { PlusCircleIcon, TrashIcon } from '@heroicons/react/24/outline'
 import EmployeesCombobox from '../inputs/employees/Combobox'
-import {
-  InfluencerFormProps,
-  SOCIAL_MEDIA,
-  SOCIAL_MEDIA_TYPE,
-  SocialMediaAccountType,
-} from '../../types/InfluencerType'
+import { Influencer, SOCIAL_MEDIA, SOCIAL_MEDIA_TYPE, SocialMediaAccountType } from '../../types/InfluencerType'
 import { Employee } from '../../types/EmployeeType'
 import { apiRequest } from '../../api'
 import { useNotification } from '../../context/Notification'
 
-const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit' | 'create'; handleDataRefresh?: Function, closeDialog?: Function}) => {
+const InfluencerForm = ({
+  type,
+  handleDataRefresh,
+  closeDialog,
+  selectedInfluencer,
+}: {
+  type?: 'edit' | 'create'
+  selectedInfluencer?: Influencer
+  handleDataRefresh?: Function
+  closeDialog?: Function
+}) => {
   const { setError, setSuccess } = useNotification()
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [formData, setFormData] = useState<InfluencerFormProps>({
+  const isDisabled = type === 'edit'
+
+  const [formData, setFormData] = useState<Influencer>({
     tiktok: [
       {
         plaform: 1,
@@ -34,6 +41,21 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
       },
     ],
   })
+
+  const handleDataPreload = useCallback(() => {
+    console.log('selectedInfluencer  type', type)
+    if (type === 'edit' && selectedInfluencer) {
+      console.log('selectedInfluencer', selectedInfluencer)
+      setFormData({ ...selectedInfluencer })
+    }
+  }, [selectedInfluencer, type])
+
+  useEffect(() => {
+    console.log('selectedInfluencer  type', type)
+    if (type === 'edit') {
+      handleDataPreload()
+    }
+  }, [handleDataPreload, type])
 
   const handleSocialMediaChange = ({
     value,
@@ -83,6 +105,7 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
         ...formData,
         employee: { img: employee?.img, id: employee?.id, name: employee?.name },
       })
+
       console.log('Form response data', response?.data)
       if (response?.errors) {
         setErrors(response.errors)
@@ -98,6 +121,28 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
       }
       setIsSubmitting(false)
     }
+
+    if (type === 'edit') {
+      console.log('payload', formData.employee, formData.id)
+      const response = await apiRequest('/influencers', 'PUT', {
+        influencerId: formData.id,
+        employee: { img: employee?.img, id: employee?.id, name: employee?.name },
+      })
+      console.log('Form response data', response?.data)
+      if (response?.errors) {
+        setErrors(response.errors)
+      }
+      if (response?.error) {
+        setError?.(response.error)
+      }
+
+      if (response?.data) {
+        setSuccess?.('Influencer updated successfully')
+        handleDataRefresh?.()
+        closeDialog?.()
+      }
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -107,6 +152,7 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
           <Field>
             <Label className='text-sm/6 font-medium text-secondary/80'>First name</Label>
             <Input
+              disabled={isDisabled}
               placeholder='Enter first name'
               value={formData?.first_name}
               onChange={(e) =>
@@ -115,7 +161,7 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
                   first_name: e.target.value,
                 })
               }
-              className={`placeholder:italic placeholder:text-secondary/40 block w-full rounded-lg border bg-white/5
+              className={`disabled:bg-tetiary/15 disabled:text-secondary/15 disabled:border-tetiary/5 disabled:shadow-none placeholder:italic placeholder:text-secondary/40 block w-full rounded-lg border bg-white/5
                      py-1.5 px-3 text-sm/6 text-secondary focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2
                      ${errors?.first_name ? ' border-red' : '  border-secondary/15 data-[focus]:outline-secondary/25'}`}
             />
@@ -124,6 +170,7 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
           <Field>
             <Label className='text-sm/6 font-medium text-secondary/80'>Last name</Label>
             <Input
+              disabled={isDisabled}
               placeholder='Enter last name'
               value={formData?.last_name}
               onChange={(e) =>
@@ -132,7 +179,7 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
                   last_name: e.target.value,
                 })
               }
-              className={`placeholder:italic placeholder:text-secondary/40 block w-full 
+              className={`disabled:bg-tetiary/15 disabled:text-secondary/15 disabled:border-tetiary/5 disabled:shadow-none placeholder:italic placeholder:text-secondary/40 block w-full 
                     rounded-lg border bg-white/5 py-1.5 px-3 text-sm/6 
                     text-secondary focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2
                       ${errors?.last_name ? ' border-red' : 'border-secondary/15 data-[focus]:outline-secondary/25'}`}
@@ -149,11 +196,12 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
                 <div className='flex gap-1.5 items-center'>
                   <Input
                     placeholder='Enter username'
+                    disabled={isDisabled}
                     value={item.username}
                     onChange={(e) =>
                       handleSocialMediaChange({ value: e.target.value, index, type: SOCIAL_MEDIA_TYPE.Tiktok })
                     }
-                    className={`placeholder:italic placeholder:text-secondary/40 block w-full rounded-lg 
+                    className={`disabled:bg-tetiary/15 disabled:text-secondary/15 disabled:border-tetiary/5 disabled:shadow-none placeholder:italic placeholder:text-secondary/40 block w-full rounded-lg 
                         border bg-white/5 py-1.5 px-3 text-sm/6 text-secondary focus:outline-none 
                         data-[focus]:outline-2 data-[focus]:-outline-offset-2
                         ${
@@ -164,14 +212,18 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
                   />
                   <div className='flex'>
                     <PlusCircleIcon
-                      className='w-6 h-6 cursor-pointer text-secondary/80'
-                      onClick={() => onPlusIconClicked(SOCIAL_MEDIA_TYPE.Tiktok)}
+                      className={`w-6 h-6 ${
+                        isDisabled || index < 1
+                          ? 'text-secondary/10 cursor-not-allowed'
+                          : ' text-secondary/80 cursor-pointer'
+                      }`}
+                      onClick={() => !isDisabled && onPlusIconClicked(SOCIAL_MEDIA_TYPE.Tiktok)}
                     />
                     <TrashIcon
                       className={`w-6 h-6 ${
-                        index < 1 ? 'text-secondary/10 cursor-not-allowed' : 'text-red cursor-pointer'
+                        isDisabled || index < 1 ? 'text-secondary/10 cursor-not-allowed' : 'text-red cursor-pointer'
                       }`}
-                      onClick={() => handleDelete(item.field, SOCIAL_MEDIA_TYPE.Tiktok)}
+                      onClick={() => (!isDisabled ? handleDelete(item.field, SOCIAL_MEDIA_TYPE.Tiktok) : null)}
                     />
                   </div>
                 </div>
@@ -190,10 +242,11 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
                   <Input
                     placeholder='Enter username'
                     value={item.username}
+                    disabled={isDisabled}
                     onChange={(e) =>
                       handleSocialMediaChange({ value: e.target.value, index, type: SOCIAL_MEDIA_TYPE.Instagram })
                     }
-                    className={`placeholder:italic placeholder:text-secondary/40 block w-full rounded-lg 
+                    className={`disabled:bg-tetiary/15 disabled:text-secondary/15 disabled:border-tetiary/5 disabled:shadow-none placeholder:italic placeholder:text-secondary/40 block w-full rounded-lg 
                           border bg-white/5 py-1.5 px-3 text-sm/6 text-secondary focus:outline-none 
                           data-[focus]:outline-2 data-[focus]:-outline-offset-2 
                           ${
@@ -204,14 +257,18 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
                   />
                   <div className='flex'>
                     <PlusCircleIcon
-                      className='w-6 h-6 cursor-pointer text-secondary/80'
-                      onClick={() => onPlusIconClicked(SOCIAL_MEDIA_TYPE.Instagram)}
+                      className={`w-6 h-6 ${
+                        isDisabled || index < 1
+                          ? 'text-secondary/10 cursor-not-allowed'
+                          : ' text-secondary/80 cursor-pointer'
+                      }`}
+                      onClick={() => !isDisabled && onPlusIconClicked(SOCIAL_MEDIA_TYPE.Instagram)}
                     />
                     <TrashIcon
                       className={`w-6 h-6 ${
-                        index < 1 ? 'text-secondary/10 cursor-not-allowed' : 'text-red cursor-pointer'
+                        isDisabled || index < 1 ? 'text-secondary/10 cursor-not-allowed' : 'text-red cursor-pointer'
                       }`}
-                      onClick={() => handleDelete(item.field, SOCIAL_MEDIA_TYPE.Instagram)}
+                      onClick={() => (!isDisabled ? handleDelete(item.field, SOCIAL_MEDIA_TYPE.Instagram) : null)}
                     />
                   </div>
                 </div>
@@ -227,6 +284,7 @@ const InfluencerForm = ({ type, handleDataRefresh, closeDialog }: { type?: 'edit
           <div>
             <EmployeesCombobox
               anchor='top'
+              defaultValue={type === 'edit' ? selectedInfluencer?.employee : undefined}
               placeholder='Selected to assign manager'
               hasError={!!errors.employee}
               handleOnChange={(value: Employee) =>

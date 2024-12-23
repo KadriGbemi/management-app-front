@@ -16,6 +16,7 @@ export default function EmployeesCombobox({
   anchor = 'bottom',
   hasError,
   handleOnChange,
+  defaultValue,
   placeholder = 'Filter by manager',
 }: QueryProps) {
   const [query, setQuery] = useState('')
@@ -67,6 +68,7 @@ export default function EmployeesCombobox({
   return (
     <div className={containerClassName}>
       <Combobox
+        defaultValue={defaultValue}
         value={selected}
         onChange={(value: Employee) => {
           setSelected(value)
@@ -81,7 +83,9 @@ export default function EmployeesCombobox({
             autoComplete='off'
             className={`w-full cursor-pointer rounded-lg bg-secondary/10 py-1.5 pr-8 pl-3 text-sm/6 placeholder:italic
             text-secondary/60 focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-1
-             ${hasError ? 'border border-red data-[focus]:outline-red': 'border-none data-[focus]:outline-secondary/10'}`}
+             ${
+               hasError ? 'border border-red data-[focus]:outline-red' : 'border-none data-[focus]:outline-secondary/10'
+             }`}
             displayValue={(person: Employee) => person?.name}
             onChange={(event) => setQuery(event.target.value)}
           />

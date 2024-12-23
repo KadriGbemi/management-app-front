@@ -17,7 +17,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   return (
     <NotificationContext.Provider value={{ error, setError, success, setSuccess }}>
       {error ? <Alert message={error} setMessage={setError} type="error" /> : null}
-      {success ? <Alert message={success} setMessage={setError} type="success"  /> : null}
+      {success ? <Alert message={success} setMessage={setSuccess} type="success"  /> : null}
       {children}
     </NotificationContext.Provider>
   )

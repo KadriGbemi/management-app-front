@@ -1,7 +1,9 @@
+import { Employee } from "./EmployeeType"
+
 export interface SocialMediaType {
     plaform: number
     field: string
-    username: string
+    username?: string
 }
 
 export interface ProfileProps {
@@ -20,6 +22,7 @@ export interface QueryProps {
     placeholder?: string
     handleOnChange?: Function
     hasError?: boolean
+    defaultValue?: Employee
 }
 
 export interface QueryPayloadProps {

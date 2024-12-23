@@ -20,7 +20,7 @@ const Alert = ({ message, setMessage, type }: { message: string; setMessage: Fun
     <button
       type='button'
       className={`ms-auto bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center ${
-        type === 'error' ? 'hover:text-red' : 'hover:text-tetiary/50'
+        type === 'error' ? 'hover:text-red' : 'hover:text-secondary/60'
       }`}
       aria-label='Close'
       onClick={() => setMessage(null)}

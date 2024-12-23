@@ -1,16 +1,21 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import InfluencerForm from '../form/Influencer'
+import { Influencer } from '../../types/InfluencerType'
 
 const DialogComponent = ({
   isOpen,
   setIsOpen,
   title = 'Create new influencer',
   handleDataRefresh,
+  selectedInfluencer,
+  type,
 }: {
   isOpen: boolean
   setIsOpen: Function
   handleDataRefresh?: Function
   title?: string
+  selectedInfluencer?: Influencer
+  type?: 'create' | 'edit'
 }) => {
   const closeDialog = () => setIsOpen(false)
 
@@ -28,7 +33,12 @@ const DialogComponent = ({
               {title}
             </DialogTitle>
 
-            <InfluencerForm type='create' handleDataRefresh={handleDataRefresh} closeDialog={closeDialog} />
+            <InfluencerForm
+              type={type}
+              handleDataRefresh={handleDataRefresh}
+              closeDialog={closeDialog}
+              selectedInfluencer={selectedInfluencer}
+            />
           </DialogPanel>
         </div>
       </div>

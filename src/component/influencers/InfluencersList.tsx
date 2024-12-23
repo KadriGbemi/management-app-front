@@ -2,7 +2,7 @@ import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import { useApiRequest } from '../../api'
 import { Influencer, SOCIAL_MEDIA } from '../../types/InfluencerType'
 import { Loading } from '../LoadingState'
-import { QueryPayloadProps, SocialMediaType } from '../../types'
+import { QueryPayloadProps } from '../../types'
 import SocialMediaIcon from '../SocialMediaIcon'
 import { Empty } from '../EmptyState'
 import { Button } from '@headlessui/react'
@@ -12,18 +12,17 @@ import SearchInput from '../inputs/SearchInput'
 import { useState } from 'react'
 import DialogComponent from '../dialog'
 
-const getSocialMediaAccounts = (socialMediaData?: SocialMediaType[]) => {
-  if (!socialMediaData?.length) return null
-
+const getSocialMediaAccounts = (influencer: Influencer) => {
   let getAllTiktokAccounts = ''
   let getAllInstagramAccounts = ''
 
-  for (let data of socialMediaData) {
-    if (data.plaform === SOCIAL_MEDIA.Tiktok) {
+  if (influencer?.tiktok) {
+    for (let data of influencer?.tiktok) {
       getAllTiktokAccounts += `${getAllTiktokAccounts.length ? ',' : ''} @${data.username}`
     }
-
-    if (data.plaform === SOCIAL_MEDIA.Instagram) {
+  }
+  if (influencer?.instagram) {
+    for (let data of influencer?.instagram) {
       getAllInstagramAccounts += `${getAllInstagramAccounts ? ',' : ''} @${data.username}`
     }
   }
@@ -51,11 +50,19 @@ const InfluencersList = () => {
   const [reloadData, setReloadData] = useState(false)
   const { data: influencers, loading } = useApiRequest<Influencer[]>(apiUrl, 'GET', reloadData)
 
-  const [isOpenCreateForm, setIsOpenCreateForm] = useState(false)
+  const [showInfluencerForm, setShowInfluencerForm] = useState<string | undefined>()
+  const [selectedInfluencer, setSelectedInfluencer] = useState<Influencer>()
 
   return (
     <>
-      <DialogComponent isOpen={isOpenCreateForm} setIsOpen={setIsOpenCreateForm} handleDataRefresh={()=> setReloadData()} />
+      <DialogComponent
+        isOpen={!!showInfluencerForm}
+        setIsOpen={setShowInfluencerForm}
+        selectedInfluencer={showInfluencerForm === 'edit' ? selectedInfluencer : undefined}
+        type='edit'
+        title={showInfluencerForm === 'edit' ? 'Edit influencer' : 'Create new influencer'}
+        handleDataRefresh={() => setReloadData(!reloadData)}
+      />
 
       <div className='flex justify-between items-center gap-4'>
         <div>
@@ -63,7 +70,7 @@ const InfluencersList = () => {
           <p>A list of all the influencers including their first and last name and their manager.</p>
         </div>
         <Button
-          onClick={() => setIsOpenCreateForm(true)}
+          onClick={() => setShowInfluencerForm('create')}
           className='inline-flex text-nowrap items-center gap-1 rounded-md bg-primary h-10 px-3 cursor-pointer text-sm font-semibold text-dark shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-primary/65'
         >
           <PlusIcon className='h-5 w-5' /> <span>Create new influencer</span>
@@ -117,7 +124,7 @@ const InfluencersList = () => {
                     >
                       <td className='px-8 py-4 whitespace-nowrap'>{influencer.first_name}</td>
                       <td className='px-8 hidden md:table-cell'> {influencer.last_name}</td>
-                      <td className='px-8 py-4'> {getSocialMediaAccounts(influencer?.social_media)}</td>
+                      <td className='px-8 py-4'> {getSocialMediaAccounts(influencer)}</td>
                       <td className='px-8 hidden md:table-cell'>
                         {' '}
                         <div className='space-x-2 text-nowrap'>
@@ -132,7 +139,13 @@ const InfluencersList = () => {
 
                       <td className='px-3 py-4'>
                         {' '}
-                        <PencilSquareIcon className='h-4 w-4 text-secondary cursor-pointer' />
+                        <PencilSquareIcon
+                          className='h-4 w-4 text-secondary cursor-pointer'
+                          onClick={() => {
+                            setShowInfluencerForm('edit')
+                            setSelectedInfluencer(influencer)
+                          }}
+                        />
                       </td>
                     </tr>
                   ))}
