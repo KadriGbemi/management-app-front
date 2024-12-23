@@ -8,6 +8,7 @@ export default {
         secondary: '#161616',
         tetiary: '#b0e0e6',
         red: '#ff3b3b',
+        danger: '#c34242',
       },
       backgroundImage: {
         'custom-gradient': 'linear-gradient(180deg, #ccc, #ededed00)',
@@ -16,6 +17,7 @@ export default {
         primary: '#e9f02e',
         secondary: '#9da093',
         danger: '#c34242',
+        tetiary: '#b0e0e6',
       },
       fontFamily:{
         'nunito': ['Nunito']

@@ -1,5 +1,7 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { useState, useEffect } from 'react';
+import { isEmpty } from '../utils';
+import { useNotification } from '../context/Notification';
 
 type APIMethodProps = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
@@ -11,52 +13,60 @@ const api = axios.create({
 });
 
 // Custom hook for handling API requests
-export const useApiRequest = <T>(url?: string, method?: APIMethodProps, body?: any) => {
+export const useApiRequest = <T>(url?: string, method?: APIMethodProps, reloadData?: boolean, body?: any) => {
   const [data, setData] = useState<T | null | undefined>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { error, setError } = useNotification()
   const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchData = async (url: string) => {
+    setLoading(true);
+    setError?.(undefined);
+    try {
+      let response: AxiosResponse<T>;
+      switch (method) {
+        case 'GET':
+          response = await api.get<T>(url);
+          break;
+        case 'POST':
+          response = await api.post<T>(url, JSON.stringify(body));
+          break;
+        case 'PUT':
+          response = await api.put<T>(url, JSON.stringify(body));
+          break;
+        case 'DELETE':
+          response = await api.delete<T>(url);
+          break;
+        default:
+          throw new Error(`Unsupported method: ${method}`);
+      }
+
+      setData(response.data);
+    } catch (err: any) {
+      const defaultErrorMessage = err?.response?.data?.message || err.message
+
+      setError?.(err instanceof Error ? defaultErrorMessage : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (url) {
-      const fetchData = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          let response: AxiosResponse<T>;
-          switch (method) {
-            case 'GET':
-              response = await api.get<T>(url);
-              break;
-            case 'POST':
-              response = await api.post<T>(url, body);
-              break;
-            case 'PUT':
-              response = await api.put<T>(url, body);
-              break;
-            case 'DELETE':
-              response = await api.delete<T>(url);
-              break;
-            default:
-              throw new Error(`Unsupported method: ${method}`);
-          }
-          
-          setData(response.data);
-        } catch (err) {
-          setError(err instanceof Error ? err.message : 'An error occurred');
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
+      fetchData(url);
     }
   }, [url, method]);
 
-  return { data, error, loading, setError };
+  useEffect(() => {
+    if (reloadData && url) {
+      fetchData(url);
+    }
+  }, [url, reloadData]);
+
+  return { data, error, loading, setError, reloadData };
 };
 
 // Function for individual requests without hooks
-export const apiRequest = async <T>(url: string, method: APIMethodProps, body?: any): Promise<{ data: T | null, error: string | null }> => {
+export const apiRequest = async <T>(url: string, method: APIMethodProps, body?: any): Promise<{ data: T | null, error?: string | null, errors?: Record<string, string> }> => {
   try {
     let response: AxiosResponse<T>;
     switch (method) {
@@ -64,10 +74,10 @@ export const apiRequest = async <T>(url: string, method: APIMethodProps, body?: 
         response = await api.get<T>(url);
         break;
       case 'POST':
-        response = await api.post<T>(url, body);
+        response = await api.post<T>(url, JSON.stringify(body));
         break;
       case 'PUT':
-        response = await api.put<T>(url, body);
+        response = await api.put<T>(url, JSON.stringify(body));
         break;
       case 'DELETE':
         response = await api.delete<T>(url, body);
@@ -75,9 +85,16 @@ export const apiRequest = async <T>(url: string, method: APIMethodProps, body?: 
       default:
         throw new Error(`Unsupported method: ${method}`);
     }
-    return { data: response.data, error: null };
+
+    return { data: response.data };
   } catch (err: any) {
-    const error = err?.response?.data?.message || err.message
-    return { data: null, error: err instanceof Error ? error : 'An error occurred' };
+    const errors = err?.response?.data?.errors || {}
+
+    const defaultErrorMessage = err?.response?.data?.message || err.message
+
+    const errorMessage = err instanceof Error ? defaultErrorMessage : 'An error occurred'
+
+    const error = isEmpty(errors) ? errorMessage : null
+    return { data: null, errors, error };
   }
 };

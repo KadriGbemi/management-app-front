@@ -32,3 +32,8 @@ export interface InfluencerFormProps extends Influencer {
   tiktok: SocialMediaFields[],
   instagram: SocialMediaFields[],
 }
+
+export interface InfluencerFormErrorProps extends Influencer {
+  tiktok: SocialMediaFields[],
+  instagram: SocialMediaFields[],
+}

@@ -1,7 +1,6 @@
 import { RequestQueryProps } from "../types"
 
 export const buildRequestQuery = ({ setApiUrl, query, apiUrl, payload, defaultPayload, setRequestPayload }: RequestQueryProps) => {
-
     if (apiUrl && setApiUrl) {
         if (!query) {
             const params = new URLSearchParams(defaultPayload as Record<string, string>)
@@ -17,4 +16,8 @@ export const buildRequestQuery = ({ setApiUrl, query, apiUrl, payload, defaultPa
             setRequestPayload?.(payload)
         }
     }
+}
+
+export const isEmpty = (obj: unknown) => {
+    return JSON.stringify(obj) === '{}'
 }

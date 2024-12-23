@@ -14,6 +14,7 @@ export default function EmployeesCombobox({
   setRequestPayload,
   containerClassName,
   anchor = 'bottom',
+  hasError,
   handleOnChange,
   placeholder = 'Filter by manager',
 }: QueryProps) {
@@ -78,7 +79,9 @@ export default function EmployeesCombobox({
           <ComboboxInput
             placeholder={placeholder}
             autoComplete='off'
-            className='w-full cursor-pointer rounded-lg border-none bg-secondary/10 py-1.5 pr-8 pl-3 text-sm/6 text-secondary/60 focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-1 data-[focus]:outline-secondary/10'
+            className={`w-full cursor-pointer rounded-lg bg-secondary/10 py-1.5 pr-8 pl-3 text-sm/6 placeholder:italic
+            text-secondary/60 focus:outline-none data-[focus]:outline-1 data-[focus]:-outline-offset-1
+             ${hasError ? 'border border-red data-[focus]:outline-red': 'border-none data-[focus]:outline-secondary/10'}`}
             displayValue={(person: Employee) => person?.name}
             onChange={(event) => setQuery(event.target.value)}
           />

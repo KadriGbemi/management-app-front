@@ -1,6 +1,7 @@
-const ErrorAlert = ({ error, setError }: { error: string; setError: Function }) => (
+const Alert = ({ message, setMessage, type }: { message: string; setMessage: Function; type: 'error' | 'success' }) => (
   <div
-    className='fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center p-2 text-sm text-white rounded-lg bg-danger shadow-lg z-50'
+    className={`fixed top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex 
+      items-center p-2 text-sm rounded-lg shadow-lg z-50 ${type === 'error' ? 'bg-danger text-white' : 'bg-tetiary text-secondary'}`}
     role='alert'
   >
     <svg
@@ -14,13 +15,15 @@ const ErrorAlert = ({ error, setError }: { error: string; setError: Function }) 
     </svg>
     <span className='sr-only'>Info</span>
     <div>
-      <span className='font-medium'>An error occured:</span> {error}
+      <span className='font-medium'>{type=== "error"? 'An error occured': "New update"}:</span> {message}
     </div>
     <button
       type='button'
-      className='ms-auto bg-transparent hover:text-red rounded-lg text-sm p-1.5 ml-auto inline-flex items-center'
+      className={`ms-auto bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center ${
+        type === 'error' ? 'hover:text-red' : 'hover:text-tetiary/50'
+      }`}
       aria-label='Close'
-      onClick={() => setError(null)}
+      onClick={() => setMessage(null)}
     >
       <svg
         className='w-4 h-4'
@@ -35,4 +38,4 @@ const ErrorAlert = ({ error, setError }: { error: string; setError: Function }) 
   </div>
 )
 
-export default ErrorAlert
+export default Alert

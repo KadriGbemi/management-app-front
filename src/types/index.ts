@@ -19,6 +19,7 @@ export interface QueryProps {
     anchor?: 'bottom' | 'top'
     placeholder?: string
     handleOnChange?: Function
+    hasError?: boolean
 }
 
 export interface QueryPayloadProps {

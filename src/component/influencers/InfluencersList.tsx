@@ -10,11 +10,10 @@ import { PlusIcon } from '@heroicons/react/24/solid'
 import EmployeesCombobox from '../inputs/employees/Combobox'
 import SearchInput from '../inputs/SearchInput'
 import { useState } from 'react'
-import ErrorAlert from '../ErrorAlert'
 import DialogComponent from '../dialog'
 
 const getSocialMediaAccounts = (socialMediaData?: SocialMediaType[]) => {
-  if(!socialMediaData?.length) return null;
+  if (!socialMediaData?.length) return null
 
   let getAllTiktokAccounts = ''
   let getAllInstagramAccounts = ''
@@ -49,13 +48,14 @@ const getSocialMediaAccounts = (socialMediaData?: SocialMediaType[]) => {
 const InfluencersList = () => {
   const [apiUrl, setApiUrl] = useState('/influencers')
   const [requestPayload, setRequestPayload] = useState<QueryPayloadProps | undefined>()
-  const { data: influencers, loading, error, setError } = useApiRequest<Influencer[]>(apiUrl, 'GET')
+  const [reloadData, setReloadData] = useState(false)
+  const { data: influencers, loading } = useApiRequest<Influencer[]>(apiUrl, 'GET', reloadData)
 
-  let [isOpenCreateForm, setIsOpenCreateForm] = useState(true)
+  const [isOpenCreateForm, setIsOpenCreateForm] = useState(false)
 
   return (
     <>
-      <DialogComponent isOpen={isOpenCreateForm} setIsOpen={setIsOpenCreateForm} />
+      <DialogComponent isOpen={isOpenCreateForm} setIsOpen={setIsOpenCreateForm} handleDataRefresh={()=> setReloadData()} />
 
       <div className='flex justify-between items-center gap-4'>
         <div>
@@ -71,7 +71,6 @@ const InfluencersList = () => {
       </div>
 
       <div className='pt-4 pb-10'>
-        {error ? <ErrorAlert error={error} setError={setError} /> : null}
         <div className='bg-white rounded-xl gap-4 grid grid-cols-1 text-left rtl:text-right w-full shadow-lg py-8'>
           <div className='flex justify-between px-8 flex-wrap gap-6'>
             <SearchInput
