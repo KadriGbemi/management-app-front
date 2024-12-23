@@ -16,8 +16,8 @@ const EmployeesList = () => {
       </div>
 
       <div className='pt-4 pb-10'>
-        <div className='bg-white rounded-xl gap-4 grid grid-cols-1 text-left rtl:text-right w-full shadow-lg pt-6'>
-          <Loading isLoading={loading} className='my-8'>
+        <Loading isLoading={loading} className='my-8'>
+          <div className='bg-white rounded-xl gap-4 grid grid-cols-1 text-left rtl:text-right w-full shadow-lg pt-4'>
             {employees?.length ? (
               <table className='table-auto text-sm w-full'>
                 <thead className='text-xs text-secondary uppercase border-b border-secondary/10'>
@@ -66,8 +66,8 @@ const EmployeesList = () => {
             ) : (
               <Empty />
             )}
-          </Loading>
-        </div>
+          </div>
+        </Loading>
       </div>
     </>
   )
