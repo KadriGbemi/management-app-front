@@ -37,7 +37,7 @@ export default function SearchInput({ setApiUrl, apiUrl, requestPayload, setRequ
       <MagnifyingGlassIcon className='absolute text-secondary/40 inset-y-0 left-0 flex items-center content-center pl-2 w-6 h-full' />
 
       <Input
-        placeholder='Search influencer...'
+        placeholder='Search by first or last name...'
         onChange={(e) => setQuery(e.target.value)}
         className='placeholder:italic placeholder:text-secondary/40 block bg-white w-full border border-secondary/15 rounded-md py-2 pl-8 pr-3 shadow-sm focus:outline-none focus:border-secondary/20 focus:ring-secondary/20 focus:ring-1 sm:text-sm'
       />
