@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { useState, useEffect } from 'react';
 import { isEmpty } from '../utils';
 import { useNotification } from '../context/Notification';
