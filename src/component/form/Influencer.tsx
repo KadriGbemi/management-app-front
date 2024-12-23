@@ -42,6 +42,10 @@ const InfluencerForm = ({
     ],
   })
 
+  useEffect(() => {
+    setErrors({})
+  }, [formData])
+
   const handleDataPreload = useCallback(() => {
     if (type === 'edit' && selectedInfluencer) {
       setFormData({ ...selectedInfluencer })
