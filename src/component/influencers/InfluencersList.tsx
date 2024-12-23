@@ -1,6 +1,6 @@
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import { useApiRequest } from '../../api'
-import { Influencer, SOCIAL_MEDIA } from '../../types/InfluencerType'
+import { DialogType, Influencer, SOCIAL_MEDIA } from '../../types/InfluencerType'
 import { Loading } from '../LoadingState'
 import { QueryPayloadProps } from '../../types'
 import SocialMediaIcon from '../SocialMediaIcon'
@@ -23,7 +23,7 @@ const getSocialMediaAccounts = (influencer: Influencer) => {
   }
   if (influencer?.instagram) {
     for (let data of influencer?.instagram) {
-      getAllInstagramAccounts += `${getAllInstagramAccounts ? ',' : ''} @${data.username}`
+      getAllInstagramAccounts += `${getAllInstagramAccounts.length ? ',' : ''} @${data.username}`
     }
   }
 
@@ -50,7 +50,7 @@ const InfluencersList = () => {
   const [reloadData, setReloadData] = useState(false)
   const { data: influencers, loading } = useApiRequest<Influencer[]>(apiUrl, 'GET', reloadData)
 
-  const [showInfluencerForm, setShowInfluencerForm] = useState<string | undefined>()
+  const [showInfluencerForm, setShowInfluencerForm] = useState<DialogType | undefined>()
   const [selectedInfluencer, setSelectedInfluencer] = useState<Influencer>()
 
   return (
@@ -59,7 +59,7 @@ const InfluencersList = () => {
         isOpen={!!showInfluencerForm}
         setIsOpen={setShowInfluencerForm}
         selectedInfluencer={showInfluencerForm === 'edit' ? selectedInfluencer : undefined}
-        type='edit'
+        type={showInfluencerForm}
         title={showInfluencerForm === 'edit' ? 'Edit influencer' : 'Create new influencer'}
         handleDataRefresh={() => setReloadData(!reloadData)}
       />
@@ -126,15 +126,16 @@ const InfluencersList = () => {
                       <td className='px-8 hidden md:table-cell'> {influencer.last_name}</td>
                       <td className='px-8 py-4'> {getSocialMediaAccounts(influencer)}</td>
                       <td className='px-8 hidden md:table-cell'>
-                        {' '}
-                        <div className='space-x-2 text-nowrap'>
-                          <img
-                            alt=''
-                            src={influencer?.employee?.img}
-                            className='inline-block size-8 rounded-full ring-2 ring-white'
-                          />
-                          <span>{influencer?.employee?.name}</span>
-                        </div>
+                        {influencer?.employee?.name ? (
+                          <div className='space-x-2 text-nowrap'>
+                            <img
+                              alt=''
+                              src={influencer?.employee?.img}
+                              className='inline-block size-8 rounded-full ring-2 ring-white'
+                            />
+                            <span>{influencer?.employee?.name}</span>
+                          </div>
+                        ) : null}
                       </td>
 
                       <td className='px-3 py-4'>

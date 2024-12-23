@@ -28,14 +28,14 @@ const InfluencerForm = ({
   const [formData, setFormData] = useState<Influencer>({
     tiktok: [
       {
-        plaform: 1,
+        plaform: SOCIAL_MEDIA.Tiktok,
         field: 'tiktok_1',
         username: '',
       },
     ],
     instagram: [
       {
-        plaform: 2,
+        plaform: SOCIAL_MEDIA.Instagram,
         field: 'instagram_1',
         username: '',
       },
@@ -98,8 +98,8 @@ const InfluencerForm = ({
 
   const handleCreateInfluencer = async () => {
     const employee = formData.employee
-    console.log('formData', formData)
     setIsSubmitting(true)
+
     if (type === 'create') {
       const response = await apiRequest('/influencers', 'POST', {
         ...formData,

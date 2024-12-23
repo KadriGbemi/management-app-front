@@ -1,6 +1,6 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import InfluencerForm from '../form/Influencer'
-import { Influencer } from '../../types/InfluencerType'
+import { DialogType, Influencer } from '../../types/InfluencerType'
 
 const DialogComponent = ({
   isOpen,
@@ -8,14 +8,14 @@ const DialogComponent = ({
   title = 'Create new influencer',
   handleDataRefresh,
   selectedInfluencer,
-  type,
+  type = 'create',
 }: {
   isOpen: boolean
   setIsOpen: Function
   handleDataRefresh?: Function
   title?: string
   selectedInfluencer?: Influencer
-  type?: 'create' | 'edit'
+  type?: DialogType
 }) => {
   const closeDialog = () => setIsOpen(false)
 

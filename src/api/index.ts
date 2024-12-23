@@ -18,49 +18,43 @@ export const useApiRequest = <T>(url?: string, method?: APIMethodProps, reloadDa
   const { error, setError } = useNotification()
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchData = async (url: string) => {
-    setLoading(true);
-    setError?.(undefined);
-    try {
-      let response: AxiosResponse<T>;
-      switch (method) {
-        case 'GET':
-          response = await api.get<T>(url);
-          break;
-        case 'POST':
-          response = await api.post<T>(url, JSON.stringify(body));
-          break;
-        case 'PUT':
-          response = await api.put<T>(url, JSON.stringify(body));
-          break;
-        case 'DELETE':
-          response = await api.delete<T>(url);
-          break;
-        default:
-          throw new Error(`Unsupported method: ${method}`);
-      }
-
-      setData(response.data);
-    } catch (err: any) {
-      const defaultErrorMessage = err?.response?.data?.message || err.message
-
-      setError?.(err instanceof Error ? defaultErrorMessage : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (url) {
-      fetchData(url);
-    }
-  }, [url, method]);
+      const fetchData = async () => {
+        setLoading(true);
+        setError?.(undefined);
+        try {
+          let response: AxiosResponse<T>;
+          switch (method) {
+            case 'GET':
+              response = await api.get<T>(url);
+              break;
+            case 'POST':
+              response = await api.post<T>(url, JSON.stringify(body));
+              break;
+            case 'PUT':
+              response = await api.put<T>(url, JSON.stringify(body));
+              break;
+            case 'DELETE':
+              response = await api.delete<T>(url);
+              break;
+            default:
+              throw new Error(`Unsupported method: ${method}`);
+          }
 
-  useEffect(() => {
-    if (reloadData && url) {
-      fetchData(url);
+          setData(response.data);
+        } catch (err: any) {
+          const defaultErrorMessage = err?.response?.data?.message || err.message
+
+          setError?.(err instanceof Error ? defaultErrorMessage : 'An error occurred');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
     }
-  }, [url, reloadData]);
+  }, [url, method, reloadData]);
 
   return { data, error, loading, setError, reloadData };
 };

@@ -3,6 +3,8 @@ import { Employee } from "./EmployeeType"
 
 export type SocialMediaAccountType = 'tiktok' | 'instagram'
 
+export type DialogType = 'create' | 'edit'
+
 export enum SOCIAL_MEDIA {
   Tiktok = 1,
   Instagram = 2,
