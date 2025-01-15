@@ -85,7 +85,7 @@ const InfluencersList = () => {
         handleDataRefresh={handleDataRefresh}
       />
 
-      <div className='flex justify-between items-center gap-4'>
+      <div className='flex justify-between items-center gap-4 flex-wrap'>
         <div>
           <h3 className='font-medium text-lg'>Influencers</h3>
           <p>A list of all the influencers including their first and last name and their manager.</p>

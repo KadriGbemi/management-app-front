@@ -17,7 +17,7 @@ export default function App() {
             <div className='flex lg:flex-1'>
               <a href='#' className='-m-1.5 p-1.5'>
                 <span className='sr-only'>Adcash management</span>
-                <img alt='Logo' src={Logo} className='h-8 w-auto text-secondary' />
+                <img alt='Logo' src={Logo} className='h-8 w-32 md:w-auto text-secondary' />
               </a>
             </div>
             <div className='flex gap-x-12'>
